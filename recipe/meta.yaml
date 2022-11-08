@@ -23,10 +23,10 @@ requirements:
     - pip
   run:
     - python
-    - flask >=1.0.4
-    - flask-compress
     - plotly >=5.0.0
     - contextvars ==2.4 # [py<37]
+    # compress
+    - flask-compress
    
 test:
   imports:
