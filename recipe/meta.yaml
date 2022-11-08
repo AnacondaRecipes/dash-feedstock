@@ -17,7 +17,7 @@ build:
   skip: true # [py<36]
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - pip
