@@ -40,6 +40,9 @@ test:
     - dash.dependencies
     - dash.exceptions
     - dash.resources
+    - dash.dcc
+    - dash.html
+    - dash.dash_table
 
 about:
   home: https://plot.ly/dash
