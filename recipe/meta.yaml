@@ -14,28 +14,31 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv
-  skip: true # [py<36]
+  noarch: python
 
 requirements:
-  host:
+  build:
     - python
     - setuptools
     - pip
+    - wheel
   run:
     - python
+    - flask >=1.0.4
     - plotly >=5.0.0
-    - contextvars ==2.4 # [py<37]
-    # compress
+    - dash-core-components ==2.0.0
+    - dash-html-components ==2.0.0
+    - dash-table ==5.0.0
+    - importlib-metadata ==4.8.3  # [py<37]
+    - contextvars ==2.4  # [py<37]
+    # compress extra
     - flask-compress
    
 test:
   imports:
     - dash.dash
-    - dash.dash_table
-    - dash.dcc
     - dash.dependencies
     - dash.exceptions
-    - dash.html
     - dash.resources
 
 about:
