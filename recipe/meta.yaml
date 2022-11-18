@@ -48,6 +48,10 @@ test:
     - dash.dcc
     - dash.html
     - dash.dash_table
+  requires:
+    - pip
+  commands:
+    - pip check
 
 about:
   home: https://plot.ly/dash
