@@ -54,7 +54,8 @@ test:
     - pip check
 
 about:
-  home: https://plot.ly/dash
+  home: https://plotly.com/dash/
+  doc_url: https://dash.plotly.com/
   dev_url: https://github.com/plotly/dash
   license: MIT
   license_family: MIT
