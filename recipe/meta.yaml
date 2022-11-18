@@ -25,13 +25,14 @@ requirements:
     - python
     - flask >=1.0.4
     - plotly >=5.0.0
-    - dash-core-components ==2.0.0
-    - dash-html-components ==2.0.0
-    - dash-table ==5.0.0
     - importlib-metadata ==4.8.3  # [py<37]
     - contextvars ==2.4  # [py<37]
     # compress extra
     - flask-compress
+  run_constrained:
+    - dash-core-components ==2.0.0
+    - dash-html-components ==2.0.0
+    - dash-table ==5.0.0
    
 test:
   imports:
