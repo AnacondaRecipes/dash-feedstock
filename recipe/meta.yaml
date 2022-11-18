@@ -61,6 +61,9 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: 'A Python framework for building reactive web-apps.'
+  description: |
+    Built on top of Plotly.js, React and Flask, Dash ties modern UI elements like dropdowns,
+    sliders, and graphs directly to your analytical Python code.
 
 extra:
   recipe-maintainers:
