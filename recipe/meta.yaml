@@ -1,6 +1,6 @@
 {% set name = "dash" %}
-{% set version = "1.19.0" %}
-{% set sha256 = "ba7307f94795fee844551791d401073d4e9b8d71596b37d54e131cec044268ef" %}
+{% set version = "2.7.0" %}
+{% set sha256 = "0b8e550539760c9c4e1506f38e052a7123a15a86efc3aa9a2e0aa4e1a57f62bf" %}
 
 package:
   name: {{ name|lower }}
@@ -10,28 +10,35 @@ source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-remove-obsolete-components.patch
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv
-  noarch: python
+  skip: true  # [py<36]
 
 requirements:
   build:
+    - patch  # [not win]
+    - m2-patch  # [win]
+  host:
     - python
     - setuptools
     - pip
+    - wheel
   run:
     - python
-    - pyyaml >=5.1.1
-    - flask >=1.0.2
+    - flask >=1.0.4
+    - plotly >=5.0.0
+    - importlib-metadata ==4.8.3  # [py<37]
+    - contextvars ==2.4  # [py<37]
+    # compress extra
     - flask-compress
-    - plotly
-    - dash-renderer ==1.1.2
-    - dash-core-components ==1.3.1
-    - dash-html-components ==1.0.1
-    - dash-table ==4.4.1
-    - future
+  run_constrained:
+    - dash-core-components ==2.0.0
+    - dash-html-components ==2.0.0
+    - dash-table ==5.0.0
    
 test:
   imports:
@@ -39,14 +46,25 @@ test:
     - dash.dependencies
     - dash.exceptions
     - dash.resources
+    - dash.dcc
+    - dash.html
+    - dash.dash_table
+  requires:
+    - pip
+  commands:
+    - pip check
 
 about:
-  home: https://plot.ly/dash
+  home: https://plotly.com/dash/
+  doc_url: https://dash.plotly.com/
   dev_url: https://github.com/plotly/dash
   license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: 'A Python framework for building reactive web-apps.'
+  description: |
+    Built on top of Plotly.js, React and Flask, Dash ties modern UI elements like dropdowns,
+    sliders, and graphs directly to your analytical Python code.
 
 extra:
   recipe-maintainers:
