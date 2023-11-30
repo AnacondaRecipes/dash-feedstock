@@ -29,17 +29,22 @@ requirements:
     - wheel
   run:
     - python
-    - flask >=1.0.4
+    - flask >=1.0.4,<3.1
+    - werkzeug <3.1
     - plotly >=5.0.0
-    - importlib-metadata ==4.8.3  # [py<37]
-    - contextvars ==2.4  # [py<37]
+    - importlib-metadata
+    - typing_extensions >=4.1.1
+    - requests
+    - retrying
+    - ansi2html
+    - nest-asyncio
     # compress extra
     - flask-compress
   run_constrained:
     - dash-core-components ==2.0.0
     - dash-html-components ==2.0.0
     - dash-table ==5.0.0
-   
+
 test:
   imports:
     - dash.dash
