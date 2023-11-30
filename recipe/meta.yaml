@@ -41,9 +41,18 @@ requirements:
     # compress extra
     - flask-compress
   run_constrained:
+    # Obsolete components now included in dash.
     - dash-core-components ==2.0.0
     - dash-html-components ==2.0.0
     - dash-table ==5.0.0
+    # diskcache extra
+    - diskcache >=5.2.1
+    - multiprocess >=0.70.12
+    - psutil >=5.8.0
+    # celery extra
+    - redis >=3.5.3
+    - celery >=5.1.2
+    - importlib-metadata <5 # [py<38]
 
 test:
   imports:
