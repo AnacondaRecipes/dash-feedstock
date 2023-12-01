@@ -1,6 +1,6 @@
 {% set name = "dash" %}
-{% set version = "2.7.0" %}
-{% set sha256 = "0b8e550539760c9c4e1506f38e052a7123a15a86efc3aa9a2e0aa4e1a57f62bf" %}
+{% set version = "2.14.2" %}
+{% set sha256 = "602e7b0047cc9c48a81244377b812e79198678ef759a0039dadfe81023e20e96" %}
 
 package:
   name: {{ name|lower }}
@@ -15,8 +15,8 @@ source:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
-  skip: true  # [py<36]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  skip: true  # [py<38]
 
 requirements:
   build:
@@ -29,17 +29,31 @@ requirements:
     - wheel
   run:
     - python
-    - flask >=1.0.4
+    - flask >=1.0.4,<3.1
+    - werkzeug <3.1
     - plotly >=5.0.0
-    - importlib-metadata ==4.8.3  # [py<37]
-    - contextvars ==2.4  # [py<37]
+    - importlib-metadata
+    - typing_extensions >=4.1.1
+    - requests
+    - retrying
+    - ansi2html
+    - nest-asyncio
     # compress extra
     - flask-compress
   run_constrained:
+    # Obsolete components now included in dash.
     - dash-core-components ==2.0.0
     - dash-html-components ==2.0.0
     - dash-table ==5.0.0
-   
+    # diskcache extra
+    - diskcache >=5.2.1
+    - multiprocess >=0.70.12
+    - psutil >=5.8.0
+    # celery extra
+    - redis >=3.5.3
+    - celery >=5.1.2
+    - importlib-metadata <5 # [py<38]
+
 test:
   imports:
     - dash.dash
