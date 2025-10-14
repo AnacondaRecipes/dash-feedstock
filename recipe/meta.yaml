@@ -1,6 +1,6 @@
 {% set name = "dash" %}
-{% set version = "2.14.2" %}
-{% set sha256 = "602e7b0047cc9c48a81244377b812e79198678ef759a0039dadfe81023e20e96" %}
+{% set version = "3.2.0" %}
+{% set sha256 = "93300b9b99498f8b8ed267e61c455b4ee1282c7e4d4b518600eec87ce6ddea55" %}
 
 package:
   name: {{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - 0001-remove-obsolete-components.patch
@@ -29,8 +29,8 @@ requirements:
     - wheel
   run:
     - python
-    - flask >=1.0.4,<3.1
-    - werkzeug <3.1
+    - flask >=1.0.4,<3.2
+    - werkzeug <3.2
     - plotly >=5.0.0
     - importlib-metadata
     - typing_extensions >=4.1.1
@@ -40,6 +40,7 @@ requirements:
     - nest-asyncio
     # compress extra
     - flask-compress
+    - setuptools
   run_constrained:
     # Obsolete components now included in dash.
     - dash-core-components ==2.0.0
@@ -51,8 +52,25 @@ requirements:
     - psutil >=5.8.0
     # celery extra
     - redis >=3.5.3
-    - celery >=5.1.2
-    - importlib-metadata <5 # [py<38]
+    - celery >=5.1.2,<5.4.0
+    - importlib-metadata <5  # [py<38]
+    - redis-py >=3.5.3,<=5.0.4
+    - kombu <5.4.0
+    - black ==22.3.0
+    - flake8 ==7.0.0
+    - flaky ==3.8.1
+    - flask-talisman ==1.0.0
+    - ipython <9.0.0
+    - mimesis <=11.1.0
+    - mock ==4.0.3
+    - numpy <=1.26.3
+    - orjson ==3.10.3
+    - pandas >=1.4.0
+    - pylint ==3.0.3
+    - pytest-sugar ==0.9.6
+    - pyzmq ==25.1.2
+    - xlrd >=2.0.1
+    - jupyterlab <4.0.0
 
 test:
   imports:
@@ -75,10 +93,12 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'A Python framework for building reactive web-apps.'
+  summary: A Python framework for building reactive web-apps.
   description: |
     Built on top of Plotly.js, React and Flask, Dash ties modern UI elements like dropdowns,
     sliders, and graphs directly to your analytical Python code.
+
+
 
 extra:
   recipe-maintainers:
