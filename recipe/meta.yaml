@@ -1,34 +1,36 @@
 {% set name = "dash" %}
 {% set version = "3.2.0" %}
-{% set sha256 = "93300b9b99498f8b8ed267e61c455b4ee1282c7e4d4b518600eec87ce6ddea55" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-split
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - 0001-remove-obsolete-components.patch
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 93300b9b99498f8b8ed267e61c455b4ee1282c7e4d4b518600eec87ce6ddea55
+  - url: https://github.com/plotly/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: e8ef5650a8cabf6fdf0a15daacd92f1b3f2a8285783f8b38745f5c6abbdc0fdd  
+    folder: gh_src
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   skip: true  # [py<38]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - dash-generate-components = dash.development.component_generator:cli
+    - dash-update-components = dash.development.update_components:cli
+    - renderer = grayskull.__main__:main
 
 requirements:
-  build:
-    - patch  # [not win]
-    - m2-patch  # [win]
   host:
+    - pip
     - python
     - setuptools
-    - pip
     - wheel
   run:
     - python
+    # compress extra
+    - flask-compress
     - flask >=1.0.4,<3.2
     - werkzeug <3.2
     - plotly >=5.0.0
@@ -38,13 +40,10 @@ requirements:
     - retrying
     - ansi2html
     - nest-asyncio
-    # compress extra
-    - flask-compress
-    - setuptools
   run_constrained:
     # Obsolete components now included in dash.
-    - dash-core-components ==2.0.0
-    - dash-html-components ==2.0.0
+    - dash-core-components >=2.0.0
+    - dash-html-components >=2.0.0
     - dash-table ==5.0.0
     # diskcache extra
     - diskcache >=5.2.1
@@ -72,7 +71,21 @@ requirements:
     - xlrd >=2.0.1
     - jupyterlab <4.0.0
 
+# selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for firefox
+{% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
+  
+{% set deselect_tests = " --deselect=gh_src/tests/unit/test_configs.py::test_missing_flask_compress_raises" %}
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_threaded_server_smoke" %}
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_process_server_smoke" %}
+# Windows pathing is wrong
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_path_to_module_name" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_import_layouts_from_pages" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages_config.py::test_pages_folder_config" %}  # [win]
+
 test:
+  source_files:
+    - gh_src/tests/unit
+    - gh_src/tests/conftest.py
   imports:
     - dash.dash
     - dash.dependencies
@@ -83,13 +96,22 @@ test:
     - dash.dash_table
   requires:
     - pip
+    - pytest
+    - pytest-mock
+    - coloredlogs
+    - grayskull
+    - percy
+    - mock
+    - yaml
   commands:
     - pip check
-
+    - dash-generate-components --help
+    - dash-update-components --help
+    - renderer --help
+    - pytest -v gh_src/tests {{ ignore_tests }} {{ deselect_tests }}
+  
 about:
-  home: https://plotly.com/dash/
-  doc_url: https://dash.plotly.com/
-  dev_url: https://github.com/plotly/dash
+  home: https://plotly.com/dash
   license: MIT
   license_family: MIT
   license_file: LICENSE
@@ -97,8 +119,8 @@ about:
   description: |
     Built on top of Plotly.js, React and Flask, Dash ties modern UI elements like dropdowns,
     sliders, and graphs directly to your analytical Python code.
-
-
+  doc_url: https://dash.plotly.com
+  dev_url: https://github.com/plotly/dash
 
 extra:
   recipe-maintainers:
