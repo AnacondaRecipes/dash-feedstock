@@ -1,36 +1,38 @@
 {% set name = "dash" %}
-{% set version = "2.14.2" %}
-{% set sha256 = "602e7b0047cc9c48a81244377b812e79198678ef759a0039dadfe81023e20e96" %}
+{% set version = "3.2.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-split
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - 0001-remove-obsolete-components.patch
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 93300b9b99498f8b8ed267e61c455b4ee1282c7e4d4b518600eec87ce6ddea55
+  - url: https://github.com/plotly/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: e8ef5650a8cabf6fdf0a15daacd92f1b3f2a8285783f8b38745f5c6abbdc0fdd  
+    folder: gh_src
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   skip: true  # [py<38]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - dash-generate-components = dash.development.component_generator:cli
+    - dash-update-components = dash.development.update_components:cli
+    - renderer = grayskull.__main__:main
 
 requirements:
-  build:
-    - patch  # [not win]
-    - m2-patch  # [win]
   host:
+    - pip
     - python
     - setuptools
-    - pip
     - wheel
   run:
     - python
-    - flask >=1.0.4,<3.1
-    - werkzeug <3.1
+    # compress extra
+    - flask-compress
+    - flask >=1.0.4,<3.2
+    - werkzeug <3.2
     - plotly >=5.0.0
     - importlib-metadata
     - typing_extensions >=4.1.1
@@ -38,12 +40,10 @@ requirements:
     - retrying
     - ansi2html
     - nest-asyncio
-    # compress extra
-    - flask-compress
   run_constrained:
     # Obsolete components now included in dash.
-    - dash-core-components ==2.0.0
-    - dash-html-components ==2.0.0
+    - dash-core-components >=2.0.0
+    - dash-html-components >=2.0.0
     - dash-table ==5.0.0
     # diskcache extra
     - diskcache >=5.2.1
@@ -51,10 +51,41 @@ requirements:
     - psutil >=5.8.0
     # celery extra
     - redis >=3.5.3
-    - celery >=5.1.2
-    - importlib-metadata <5 # [py<38]
+    - celery >=5.1.2,<5.4.0
+    - importlib-metadata <5  # [py<38]
+    - redis-py >=3.5.3,<=5.0.4
+    - kombu <5.4.0
+    - black ==22.3.0
+    - flake8 ==7.0.0
+    - flaky ==3.8.1
+    - flask-talisman ==1.0.0
+    - ipython <9.0.0
+    - mimesis <=11.1.0
+    - mock ==4.0.3
+    - numpy <=1.26.3
+    - orjson ==3.10.3
+    - pandas >=1.4.0
+    - pylint ==3.0.3
+    - pytest-sugar ==0.9.6
+    - pyzmq ==25.1.2
+    - xlrd >=2.0.1
+    - jupyterlab <4.0.0
+
+# selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for firefox
+{% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
+  
+{% set deselect_tests = " --deselect=gh_src/tests/unit/test_configs.py::test_missing_flask_compress_raises" %}
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_threaded_server_smoke" %}
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_process_server_smoke" %}
+# Windows pathing is wrong
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_path_to_module_name" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_import_layouts_from_pages" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages_config.py::test_pages_folder_config" %}  # [win]
 
 test:
+  source_files:
+    - gh_src/tests/unit
+    - gh_src/tests/conftest.py
   imports:
     - dash.dash
     - dash.dependencies
@@ -65,20 +96,31 @@ test:
     - dash.dash_table
   requires:
     - pip
+    - pytest
+    - pytest-mock
+    - coloredlogs
+    - grayskull
+    - percy
+    - mock
+    - yaml
   commands:
     - pip check
-
+    - dash-generate-components --help
+    - dash-update-components --help
+    - renderer --help
+    - pytest -v gh_src/tests {{ ignore_tests }} {{ deselect_tests }}
+  
 about:
-  home: https://plotly.com/dash/
-  doc_url: https://dash.plotly.com/
-  dev_url: https://github.com/plotly/dash
+  home: https://plotly.com/dash
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'A Python framework for building reactive web-apps.'
+  summary: A Python framework for building reactive web-apps.
   description: |
     Built on top of Plotly.js, React and Flask, Dash ties modern UI elements like dropdowns,
     sliders, and graphs directly to your analytical Python code.
+  doc_url: https://dash.plotly.com
+  dev_url: https://github.com/plotly/dash
 
 extra:
   recipe-maintainers:
