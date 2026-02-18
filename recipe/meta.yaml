@@ -1,5 +1,12 @@
 {% set name = "dash" %}
-{% set version = "3.2.0" %}
+{% set version = "4.0.0" %}
+{% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
+{% set deselect_tests = " --deselect=gh_src/tests/unit/test_configs.py::test_missing_flask_compress_raises" %}
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_threaded_server_smoke"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_process_server_smoke"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_path_to_module_name"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_import_layouts_from_pages"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages_config.py::test_pages_folder_config"' %}  # [win]
 
 package:
   name: {{ name|lower }}
@@ -7,9 +14,9 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 93300b9b99498f8b8ed267e61c455b4ee1282c7e4d4b518600eec87ce6ddea55
+    sha256: c5f2bca497af288f552aea3ae208f6a0cca472559003dac84ac21187a1c3a142
   - url: https://github.com/plotly/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: e8ef5650a8cabf6fdf0a15daacd92f1b3f2a8285783f8b38745f5c6abbdc0fdd  
+    sha256: dccf5fc863888a0df53ebdc9a8fb826c65a6813e64b450a8d395d63f4e71609c
     folder: gh_src
 
 build:
@@ -40,6 +47,7 @@ requirements:
     - retrying
     - ansi2html
     - nest-asyncio
+    - setuptools
   run_constrained:
     # Obsolete components now included in dash.
     - dash-core-components >=2.0.0
@@ -63,25 +71,16 @@ requirements:
     - mimesis <=11.1.0
     - mock ==4.0.3
     - numpy <=1.26.3
-    - orjson ==3.10.3
+    - orjson >=3.10.11
     - pandas >=1.4.0
     - pylint ==3.0.3
-    - pytest-sugar ==0.9.6
-    - pyzmq ==25.1.2
+    - pytest-sugar ==1.1.1
+    - pyzmq >=26.0.0
     - xlrd >=2.0.1
     - jupyterlab <4.0.0
 
 # selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for firefox
-{% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
-  
-{% set deselect_tests = " --deselect=gh_src/tests/unit/test_configs.py::test_missing_flask_compress_raises" %}
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_threaded_server_smoke" %}
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_process_server_smoke" %}
 # Windows pathing is wrong
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_path_to_module_name" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_import_layouts_from_pages" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages_config.py::test_pages_folder_config" %}  # [win]
-
 test:
   source_files:
     - gh_src/tests/unit
@@ -109,7 +108,7 @@ test:
     - dash-update-components --help
     - renderer --help
     - pytest -v gh_src/tests {{ ignore_tests }} {{ deselect_tests }}
-  
+
 about:
   home: https://plotly.com/dash
   license: MIT
