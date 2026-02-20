@@ -1,5 +1,5 @@
 {% set name = "dash" %}
-{% set version = "3.2.0" %}
+{% set version = "4.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,19 +7,19 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 93300b9b99498f8b8ed267e61c455b4ee1282c7e4d4b518600eec87ce6ddea55
+    sha256: c5f2bca497af288f552aea3ae208f6a0cca472559003dac84ac21187a1c3a142
   - url: https://github.com/plotly/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: e8ef5650a8cabf6fdf0a15daacd92f1b3f2a8285783f8b38745f5c6abbdc0fdd  
+    sha256: dccf5fc863888a0df53ebdc9a8fb826c65a6813e64b450a8d395d63f4e71609c
     folder: gh_src
 
 build:
   number: 0
-  skip: true  # [py<38]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - dash-generate-components = dash.development.component_generator:cli
     - dash-update-components = dash.development.update_components:cli
     - renderer = grayskull.__main__:main
+  skip: true  # [py<38]
 
 requirements:
   host:
@@ -30,7 +30,7 @@ requirements:
   run:
     - python
     # compress extra
-    - flask-compress
+    - flask-compress >=1.6.0
     - flask >=1.0.4,<3.2
     - werkzeug <3.2
     - plotly >=5.0.0
@@ -38,13 +38,12 @@ requirements:
     - typing_extensions >=4.1.1
     - requests
     - retrying
-    - ansi2html
     - nest-asyncio
   run_constrained:
-    # Obsolete components now included in dash.
-    - dash-core-components >=2.0.0
-    - dash-html-components >=2.0.0
-    - dash-table ==5.0.0
+    # Obsolete components now included in dash. In components folder.
+    - dash-core-components >=4.0.0
+    - dash-html-components >=4.0.0
+    - dash-table ==7.0.0
     # diskcache extra
     - diskcache >=5.2.1
     - multiprocess >=0.70.12
@@ -55,6 +54,7 @@ requirements:
     - importlib-metadata <5  # [py<38]
     - redis-py >=3.5.3,<=5.0.4
     - kombu <5.4.0
+    # ci extra
     - black ==22.3.0
     - flake8 ==7.0.0
     - flaky ==3.8.1
@@ -63,13 +63,14 @@ requirements:
     - mimesis <=11.1.0
     - mock ==4.0.3
     - numpy <=1.26.3
-    - orjson ==3.10.3
+    - orjson >=3.10.3
     - pandas >=1.4.0
     - pylint ==3.0.3
-    - pytest-sugar ==0.9.6
-    - pyzmq ==25.1.2
+    - pyzmq>=26.0.0
+    - pytest-sugar ==1.1.1
     - xlrd >=2.0.1
     - jupyterlab <4.0.0
+    - mypy ==1.15.0
 
 # selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for firefox
 {% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
