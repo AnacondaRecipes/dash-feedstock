@@ -1,15 +1,24 @@
 {% set name = "dash" %}
-{% set version = "4.0.0" %}
+{% set version = "4.4.1" %}
+{% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
+{% set deselect_tests = " --deselect=gh_src/tests/unit/test_configs.py::test_missing_flask_compress_raises" %}
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_threaded_server_smoke"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_process_server_smoke"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_path_to_module_name"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_import_layouts_from_pages"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages_config.py::test_pages_folder_config"' %}  # [win]
 
+# selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for firefox
+# Windows pathing is wrong
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: c5f2bca497af288f552aea3ae208f6a0cca472559003dac84ac21187a1c3a142
+    sha256: 9356ca7856bc496c12c5b6de5978aaf783e090d07450ee395ade1c0c2cbdf816
   - url: https://github.com/plotly/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: dccf5fc863888a0df53ebdc9a8fb826c65a6813e64b450a8d395d63f4e71609c
+    sha256: 7eca0a3111a15f1000aacf98f842f7608898a61baac153a7efa3f6a7b97b5c61
     folder: gh_src
 
 build:
@@ -72,17 +81,6 @@ requirements:
     - jupyterlab <4.0.0
     - mypy ==1.15.0
 
-# selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for firefox
-{% set ignore_tests = " --ignore=gh_src/tests/unit/test_browser.py" %}
-  
-{% set deselect_tests = " --deselect=gh_src/tests/unit/test_configs.py::test_missing_flask_compress_raises" %}
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_threaded_server_smoke" %}
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/test_app_runners.py::test_process_server_smoke" %}
-# Windows pathing is wrong
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_path_to_module_name" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages.py::test_import_layouts_from_pages" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=gh_src/tests/unit/pages/test_pages_config.py::test_pages_folder_config" %}  # [win]
-
 test:
   source_files:
     - gh_src/tests/unit
@@ -110,7 +108,7 @@ test:
     - dash-update-components --help
     - renderer --help
     - pytest -v gh_src/tests {{ ignore_tests }} {{ deselect_tests }}
-  
+
 about:
   home: https://plotly.com/dash
   license: MIT
