@@ -13,7 +13,7 @@ source:
     folder: gh_src
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - dash-generate-components = dash.development.component_generator:cli
@@ -55,7 +55,9 @@ requirements:
     - ipython <9.0.0
     - mimesis <=11.1.0
     - mock ==4.0.3
-    - numpy <=1.26.3
+    # This dependency is broken in `plotly-resampler 0.11.1`
+    # Please do not uncomment it before you are sure that the dependency is fixed in `plotly-resampler 0.11.2` or later.
+    # - numpy <=1.26.3
     - orjson >=3.10.11
     - pandas >=1.4.0
     - pylint ==3.0.3
