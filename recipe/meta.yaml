@@ -52,7 +52,9 @@ requirements:
     - flake8 ==7.0.0
     - flaky ==3.8.1
     - flask-talisman ==1.0.0
-    - ipython <9.0.0
+    # This dependency is broken in `plotly-resampler 0.11.1`
+    # Please do not uncomment it before you are sure that the dependency is fixed in `plotly-resampler 0.11.2` or later.
+    # - ipython <9.0.0
     - mimesis <=11.1.0
     - mock ==4.0.3
     # This dependency is broken in `plotly-resampler 0.11.1`
