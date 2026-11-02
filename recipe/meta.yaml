@@ -18,7 +18,7 @@ build:
   entry_points:
     - dash-generate-components = dash.development.component_generator:cli
     - dash-update-components = dash.development.update_components:cli
-    - renderer = grayskull.__main__:main
+    - renderer = dash.development.build_process:renderer
   skip: true  # [py<39]
 
 requirements:
@@ -52,7 +52,6 @@ requirements:
     - flake8 ==7.3.0
     - flaky ==3.8.1
     - flask-talisman ==1.1.0
-    - httpx
     # This dependency is broken in `plotly-resampler 0.11.1`
     # Please do not uncomment it before you are sure that the dependency is fixed in `plotly-resampler 0.11.2` or later.
     # - ipython <9.0.0
@@ -62,21 +61,15 @@ requirements:
     # main channel (only up to 4.0.3); mock is also in test: requires:, so an
     # unsatisfiable exact run_constrained pin here breaks the test env solve.
     - mock ==4.0.3
-    - msgspec
     # This dependency is broken in `plotly-resampler 0.11.1`
     # Please do not uncomment it before you are sure that the dependency is fixed in `plotly-resampler 0.11.2` or later.
     # - numpy <=2.5.4
-    - openpyxl
     - orjson >=3.10.11
     - pandas >=1.4.0
-    - pyarrow
     - pylint ==3.0.3
-    - pytest-split
     - pytest-sugar ==1.1.1
     - pyzmq >=26.0.0
     - xlrd >=2.0.1
-    - pytest-rerunfailures
-    - pytest-timeout
     - jupyterlab <4.0.0
     - pyright ==1.1.414       # [py>=37]
     - mypy ==1.15.0           # [py>=312]
@@ -129,7 +122,7 @@ test:
     - pytest
     - pytest-mock
     - coloredlogs
-    - grayskull
+    - fire >=0.4.0
     - percy
     - mock
     - yaml
